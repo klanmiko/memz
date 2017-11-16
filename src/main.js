@@ -21,7 +21,7 @@ const router = new VueRouter({
 })
 const store = new Vuex.Store({
   state: {
-    usrData: null
+    usrData: window.usrInfo
   },
 
 });

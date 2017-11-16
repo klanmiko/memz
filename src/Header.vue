@@ -32,6 +32,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    ul.uk-navbar-nav > li > a {
+        font-size: 18px;
+    }
     .login {
         margin-right: 10px;
         border: 1px solid #959595;

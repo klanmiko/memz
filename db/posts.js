@@ -6,7 +6,7 @@ function sanitize(string) {
 }
 module.exports.add = function(post, cb) {
     if(!post.title || !post.file) {
-        cb("missing arguments");
+        cb(new Error("missing arguments"));
         return;    
     }
     post.title = sanitize(post.title);

@@ -1,10 +1,12 @@
 <template>
     <div class="uk-card uk-card-default uk-box-shadow-small">
         <div class="uk-card-header">
-        <h3 class="uk-card-title">{{title}}</h3>
+            <h3 class="uk-card-title">{{title}}</h3>
         </div>
         <div class="uk-card-body">
-            <img v-bind:src="img">
+            <div class="uk-card-media-top">
+                <img v-bind:src="img">
+            </div>
         </div>
         <div class="uk-card-footer">
             <span>{{tally}}</span>
@@ -23,7 +25,6 @@
 </template>
 
 <script>
-import $ from 'jquery'
 import UIKit from 'uikit'
 export default {
     name: "Card",

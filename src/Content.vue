@@ -29,7 +29,7 @@ export default {
     methods: {
         loadMore: function (event) {
             console.log(event);
-            this.$http.get('/api/posts', {body: {scroll: scroll}}).then(response => {
+            this.$http.get('/posts', {body: {scroll: scroll}}).then(response => {
                 console.log(response);
             }, error => {
                 console.error(error);
@@ -37,7 +37,7 @@ export default {
         }
     },
     created: function () {
-        this.$http.get('/api/posts').then(response => {
+        this.$http.get('/posts').then(response => {
             console.log(response);
 
         }, err => {
