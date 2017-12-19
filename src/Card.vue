@@ -41,7 +41,7 @@ export default {
     },
     methods: {
         upvote: function () {
-            if(!this.$store.usrData) {
+            if(!this.$store.state.usrData) {
                 var modal = UIKit.modal('#loginPrompt', {});
                 modal.show();
                 return;

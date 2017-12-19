@@ -1,20 +1,34 @@
 <template>
   <div class="uk-container-small outer">
     <h1>Login to Access Entertainment</h1>
+    <div id="login-alert" class="uk-alert-danger" v-if="loginStatus.loginError || loginStatus.loginInfo" v-bind:class = "{'uk-alert-danger': loginStatus.loginError, 
+        'uk-alert-info': loginStatus.loginInfo}" uk-alert>
+        <p>{{loginStatus.loginMessage}}</p>
+    </div>
     <div>
-        <form v-on:submit = "submit()">
-            <input class="uk-input" type="text" required placeholder="Username">
-            <input class="uk-input" type="password" required placeholder="password">
+        <form class="uk-form-horizontal" v-on:submit.prevent = "submit()">
+            <label class="uk-form-label">Username</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" type="text" v-model="username" required placeholder="Username">
+            </div>
+            <label class="uk-form-label">Password</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" type="password" v-model="password" required placeholder="password">
+            </div>
             <hr>
             <label class="switch">
-                <input type="checkbox" v-on:click="toggleForm">
+                <input id="toggle" type="checkbox" v-model="checked">
                 <span class="slider round"></span>
             </label>
-            <div class="uk-switcher">
-                <div>
-
+            <div id="switched">
+                <div v-if="state == 'register'">
+                    <div id="email-alert" v-if="!emailValid" class="uk-alert-danger" uk-alert>
+                        <p>That email address is invalid</p>
+                     </div>
+                    <input class="uk-input" type="email" v-model.lazy="email" required placeholder="Email">
+                    <button class="uk-button uk-button-primary">Register</button>
                 </div>
-                <div>
+                <div v-if="state == 'login'">
                     <button class="uk-button uk-button-primary">Login</button>
                 </div>
             </div>
@@ -24,21 +38,61 @@
 </template>
 
 <script>
+import UIKit from 'uikit';
 export default {
     data () {
         return {
-            state: 'login',
+            checked: false,
             username: '',
-            password: ''
+            password: '',
+            email: '',
+            loginStatus: {
+                loginError: false,
+                loginInfo: false,
+                loginMessage: ""
+            },
+            emailValid: true
+        }
+    },
+    watch: {
+        email: function() {
+            this.emailValid = true;
+        }
+    },
+    computed: {
+        state: function() {
+            return this.checked ? "register" : "login";
         }
     },
     methods: {
         submit: function() {
-            
+            if(this.state == 'register') {
+                if(this.email.includes('@') && this.email.indexOf('@') < this.email.slice(this.email.indexOf('@') + 1).indexOf('.')){
+                    this.$http.post('/api/register', {username: this.username, password: this.password, email: this.email}).then(
+                        response => {
+                            console.log(response);
+                        },
+                        response => {
+                            console.log(response);
+                        }
+                    );
+                }
+                else {
+                    this.emailValid = false;
+                }
+            }
+            else if(this.state == 'login') {
+                this.$http.post('/login',  {username: this.username, password: this.password}).then(
+                    response => {
+                        console.log(response);
+                        window.location.href = response.body.redirect;
+                    },
+                    response => {
+                        console.log(response.body.message);
+                    }
+                );
+            }
         },
-        toggleForm: function() {
-
-        }
     }
 }
 </script>

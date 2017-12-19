@@ -9,6 +9,7 @@
 <script>
 import Header from './Header.vue'
 import LoginPrompt from './LoginPrompt.vue'
+import Post from './Post.vue'
 export default {
   name: 'app',
   data () {
@@ -18,7 +19,8 @@ export default {
   },
   components: {
     'app-header': Header,
-    'login-prompt':LoginPrompt
+    'login-prompt':LoginPrompt,
+    'post': Post
   }
 }
 </script>

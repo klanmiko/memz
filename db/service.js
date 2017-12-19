@@ -1,4 +1,4 @@
-var MongoClient = require('mongodb').MongoClient;
+const {MongoClient, ObjectId} = require('mongodb');
 var url = require('../config.js').url;
 class Database {
     constructor(name){
@@ -7,6 +7,7 @@ class Database {
                 console.error(err);
             }
             this.db = db.collection(name);
+            this.ObjectId = ObjectId;
         }.bind(this));
     }
 }

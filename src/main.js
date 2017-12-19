@@ -14,6 +14,7 @@ Vue.use(Vuex);
 var routes = [
   {path: '/', component: Content},
   {path: '/about', component: About},
+  {path: '/post/:id', component: Post}
 ];
 const router = new VueRouter({
   mode: 'history',

@@ -14,7 +14,9 @@
             </ul>
         </div>
         <div class="uk-navbar-right">
-            <div v-if="this.$store.usrData"></div>
+            <div v-if="usrData">
+                
+            </div>
             <div v-else>
                 <a class="uk-button uk-button-default login" href="/login">Login</a></button>
             </div>
@@ -26,6 +28,11 @@
 export default {
     data () {
         return {
+        }
+    },
+    computed: {
+        usrData: function() {
+            return this.$store.state.usrData
         }
     }
 }
