@@ -15,24 +15,36 @@
         </div>
         <div class="uk-navbar-right">
             <div v-if="usrData">
-                
+                <img class="profile-pic" :src="logo" />
+                <span>
+                    {{$store.state.usrData.username}}
+                    (<a href="/logout">logout</a>)
+                </span>
             </div>
             <div v-else>
-                <a class="uk-button uk-button-default login" href="/login">Login</a></button>
+                <a class="uk-button uk-button-default login" @click="go">Login</a></button>
             </div>
         </div>
     </nav>
 </template>
 
 <script>
+import logo from './assets/logo.png'
 export default {
     data () {
         return {
+            logo: logo
         }
     },
     computed: {
         usrData: function() {
             return this.$store.state.usrData
+        }
+    },
+    methods: {
+        go() 
+        {
+            window.location.href = "/login?back=" + this.$route.path;
         }
     }
 }
@@ -46,6 +58,10 @@ export default {
         margin-right: 10px;
         border: 1px solid #959595;
         border-radius: 20px;
+    }
+    img.profile-pic {
+        width: 64px;
+        height: 64px;
     }
 </style>
 

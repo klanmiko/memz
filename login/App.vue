@@ -16,16 +16,22 @@
                 <input class="uk-input" type="password" v-model="password" required placeholder="password">
             </div>
             <hr>
-            <label class="switch">
-                <input id="toggle" type="checkbox" v-model="checked">
-                <span class="slider round"></span>
-            </label>
+            <div class="level">
+                <span :class="{active: state=='login'}">Login</span>
+                <label class="switch">
+                    <input id="toggle" type="checkbox" v-model="checked">
+                    <span class="slider round"></span>
+                </label>
+            <span :class="{active: state=='register'}">Register</span></div>
             <div id="switched">
                 <div v-if="state == 'register'">
                     <div id="email-alert" v-if="!emailValid" class="uk-alert-danger" uk-alert>
                         <p>That email address is invalid</p>
                      </div>
-                    <input class="uk-input" type="email" v-model.lazy="email" required placeholder="Email">
+                     <label class="uk-form-label">Email</label>
+                    <div class="uk-form-controls">
+                        <input class="uk-input" type="email" v-model.lazy="email" required placeholder="Email">
+                    </div>
                     <button class="uk-button uk-button-primary">Register</button>
                 </div>
                 <div v-if="state == 'login'">
@@ -67,10 +73,10 @@ export default {
     methods: {
         submit: function() {
             if(this.state == 'register') {
-                if(this.email.includes('@') && this.email.indexOf('@') < this.email.slice(this.email.indexOf('@') + 1).indexOf('.')){
+                if(this.email.includes('@') && this.email.slice(this.email.indexOf('@') + 1).indexOf('.') > 1){
                     this.$http.post('/api/register', {username: this.username, password: this.password, email: this.email}).then(
                         response => {
-                            console.log(response);
+                            if(response.body.redirect) window.location.href = response.body.redirect;
                         },
                         response => {
                             console.log(response);
@@ -82,7 +88,7 @@ export default {
                 }
             }
             else if(this.state == 'login') {
-                this.$http.post('/login',  {username: this.username, password: this.password}).then(
+                this.$http.post('/login'+window.location.search,  {username: this.username, password: this.password}).then(
                     response => {
                         console.log(response);
                         window.location.href = response.body.redirect;
@@ -104,7 +110,21 @@ export default {
 // 4. Import UIkit.
     @import "~uikit/src/scss/uikit-theme.scss";
     .outer {
-        margin-top: 20px;
+        margin: 20px;
+    }
+    .level {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .level > span {
+        margin-left: 20px;
+        margin-right: 20px;
+        color: #a4a4a4;
+    }
+    .level > span.active {
+        color: black;
     }
      /* The switch - the box around the slider */
     .switch {

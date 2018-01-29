@@ -1,7 +1,7 @@
 <<template>
   <div class="uk-margin uk-child-width-1-2@m uk-grid-divider" uk-grid>
     <div>
-        <form class="uk-padding">
+        <form @submit.prevent="upload" class="uk-padding">
             <legend class="uk-legend"> Post Title</legend>
             <div class="uk-margin">
                 <input v-model="title" class="uk-input uk-width-1-1" required type="text" placeholder="A creative title" />
@@ -11,7 +11,7 @@
                     <input @change="changeImg" type="file"/>
                     <input id="toggle" type="text" class="uk-input" required disabled placeholder="Select Image"/>
                 </div>
-                <button @click="upload" class="uk-button uk-button-primary uk-width-1-4">Submit</button>
+                <input type="submit" class="uk-button uk-button-primary uk-width-1-4" value="Submit" />
             </div>
         </form>
         <progress id="progressbar" class="uk-progress" value="0" max="100" hidden></progress>
@@ -34,7 +34,8 @@ export default {
             points: 0,
             commentCount: 0,
             voted: false,
-            img: null
+            img: null,
+            imgFile: null
         }
     },
     components: {
@@ -47,6 +48,8 @@ export default {
             {
                 var reader = new FileReader();
                 var self = this;
+                console.log(typeof input.files[0])
+                this.imgFile = input.files[0]
                 reader.onload = function(e) 
                 {
                     self.img = e.target.result;
@@ -62,52 +65,15 @@ export default {
             {
                 return;
             }
-
+            var formData = new FormData();
+            formData.append('title', this.title);
+            formData.append('post', this.imgFile)
             var bar = $("#progressbar")[0];
-            UIKit.upload('form', {
-                url: '/submit',
-                multiple: false,
-                params: {
-                    title: this.title
-                },
-
-                beforeSend: function() { console.log('beforeSend', arguments); },
-                beforeAll: function() { console.log('beforeAll', arguments); },
-                load: function() { console.log('load', arguments); },
-                error: function() { UIKit.notification('error', arguments); },
-                complete: function() { console.log('complete', arguments); },
-
-                loadStart: function (e) {
-                    console.log('loadStart', arguments);
-
-                    bar.removeAttribute('hidden');
-                    bar.max =  e.total;
-                    bar.value =  e.loaded;
-                },
-
-                progress: function (e) {
-                    console.log('progress', arguments);
-
-                    bar.max =  e.total;
-                    bar.value =  e.loaded;
-
-                },
-
-                loadEnd: function (e) {
-                    console.log('loadEnd', arguments);
-
-                    bar.max =  e.total;
-                    bar.value =  e.loaded;
-                },
-
-                completeAll: function () {
-                    console.log('completeAll', arguments);
-
-                    setTimeout(function () {
-                        bar.setAttribute('hidden', 'hidden');
-                    }, 1000);
-                    UIKit.notification("upload Completed");
-                }
+            this.$http.post('/api/submit', formData).then(function(res){
+                console.log(res);
+                if(res.body.redirect) window.location.href = res.body.redirect;
+            }, function(res){
+                console.error(res);
             });
         }
     }

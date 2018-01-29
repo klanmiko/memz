@@ -14,7 +14,6 @@ var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var Auth = require('./db/users.js');
-var postController = require('./posts/controller.js');
 var morgan = require('morgan');
 
 passport.serializeUser(Auth.serializeUser);
@@ -45,34 +44,41 @@ passport.use(new LocalStrategy(
 ));
 
 app.get('/login', function(req, res) {
+    if(req.user) return res.redirect(req.query.back || "/");
     res.sendFile(path.join(__dirname, 'login/index.html'));
 });
 
 app.get('/login', function(error, req, res, next){
     console.log("error handler");
     if(error) console.error(error);
+    next();
+})
+
+app.get('/logout', function(req, res){
+    if(req.user) {
+        req.logout();
+        return res.redirect(req.query.back || "/");
+    }
+    res.redirect(req.query.back || "/");
 })
 
 app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), function(req, res) {
     let redirect = req.query.back || '/';
     res.json({redirect: redirect});
+    //res.redirect("/login")
 });
 
 app.get('/submit', function(req, res) {
     if(req.user)
         res.sendFile(path.join(__dirname, 'submit/index.html'));
     else   
-        res.redirect('/login');
+        res.redirect("/login");
 });
 
 app.use('/api', apiRouter);
 
-app.use('/posts', require(path.join(__dirname, 'posts/routes.js')));
-
-app.get('/*', function(req, res, next) {
-    console.log(req.user);
-    console.log(req.session);
-    console.log(req._passport);
-    return res.render(path.join(__dirname, 'template/index.ejs'), {usrInfo: JSON.stringify(req.user || null)});
+app.get('/*', function(req, res) {
+    var obj = req.user ? {username: req.user.username} : null;
+    return res.render(path.join(__dirname, 'template/index.ejs'), {usrInfo: JSON.stringify(obj)});
 });
 http.createServer(app).listen(8080);
